@@ -21,25 +21,21 @@
       height: 100vh;
     }
 
-    /* FIXED pulzáló hotspot a képernyő közepén */
-    .fixed-hotspot {
-      width: 20px;
-      height: 20px;
+    /* Pulzáló hotspot a panorámához rögzítve */
+    .custom-hotspot {
+      width: 40px;          /* hotspot mérete */
+      height: 40px;
       background: #00aaff;
       border-radius: 50%;
-      position: fixed; /* FONTOS: mindig a képernyőn marad */
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
       cursor: pointer;
+      position: relative;   /* fontos: Pannellum kezeli a pozíciót */
     }
 
-    .fixed-hotspot::after {
+    .custom-hotspot::after {
       content: '';
       position: absolute;
-      width: 20px;
-      height: 20px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: rgba(0,170,255,0.5);
       animation: pulse 1.8s infinite;
@@ -61,13 +57,11 @@
         opacity: 0;
       }
     }
-
   </style>
 </head>
 <body>
 
 <div id="panorama"></div>
-<div class="fixed-hotspot" id="hotspot"></div>
 
 <script>
   // Pannellum viewer inicializálása
@@ -81,27 +75,56 @@
           "cockpit": {
               "type": "equirectangular",
               "panorama": "Cockpit.jpg",
+              "hotSpots": [
+                  {
+                      "pitch": -5,          // függőleges pozíció a panorámában
+                      "yaw": 30,            // vízszintes pozíció a panorámában
+                      "cssClass": "custom-hotspot",
+                      "createTooltipFunc": hotspot,
+                      "createTooltipArgs": "Passenger Seat",
+                      "clickHandlerFunc": function() {
+                          viewer.loadScene("passenger");
+                      }
+                  }
+              ]
           },
           "passenger": {
               "type": "equirectangular",
-              "panorama": "Passenger.png",
+              "panorama": "Passenger.jpg",
+              "hotSpots": [
+                  {
+                      "pitch": 0,
+                      "yaw": -60,
+                      "cssClass": "custom-hotspot",
+                      "createTooltipFunc": hotspot,
+                      "createTooltipArgs": "Cockpit",
+                      "clickHandlerFunc": function() {
+                          viewer.loadScene("cockpit");
+                      }
+                  }
+              ]
           }
       }
   });
 
-  // Fixed hotspot kattintás
-  var hotspot = document.getElementById('hotspot');
-  var currentScene = "cockpit";
+  // Hotspot tooltip függvény (felirat)
+  function hotspot(hotSpotDiv, args) {
+      hotSpotDiv.classList.add('custom-hotspot');
 
-  hotspot.addEventListener('click', function() {
-      if(currentScene === "cockpit") {
-          viewer.loadScene("passenger");
-          currentScene = "passenger";
-      } else {
-          viewer.loadScene("cockpit");
-          currentScene = "cockpit";
-      }
-  });
+      var tooltip = document.createElement('div');
+      tooltip.innerHTML = args;
+      tooltip.style.position = 'absolute';
+      tooltip.style.bottom = '50px';
+      tooltip.style.left = '-20px';
+      tooltip.style.padding = '3px 8px';
+      tooltip.style.background = 'rgba(0,0,0,0.6)';
+      tooltip.style.color = '#fff';
+      tooltip.style.borderRadius = '4px';
+      tooltip.style.fontSize = '12px';
+      tooltip.style.whiteSpace = 'nowrap';
+
+      hotSpotDiv.appendChild(tooltip);
+  }
 </script>
 
 </body>
