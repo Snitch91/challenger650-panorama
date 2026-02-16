@@ -2,9 +2,11 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>360 Panorama</title>
+  <title>Challenger 650 Panorama</title>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.css"/>
   <script src="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.js"></script>
+
   <style>
     html, body {
       margin: 0;
@@ -24,7 +26,9 @@
 pannellum.viewer('panorama', {
     "type": "equirectangular",
     "panorama": "Media.jpg",
-    "autoLoad": true
+    "autoLoad": true,
+    "showZoomCtrl": true,
+    "showFullscreenCtrl": true
 });
 </script>
 
