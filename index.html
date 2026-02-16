@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Challenger 650 Panorama</title>
+  <title>Challenger 650 Virtual Tour</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.css"/>
   <script src="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.js"></script>
@@ -11,11 +11,47 @@
     html, body {
       margin: 0;
       height: 100%;
+      overflow: hidden;
     }
+
     #panorama {
       width: 100%;
       height: 100vh;
     }
+
+    /* Pulzáló hotspot */
+    .custom-hotspot {
+      width: 20px;
+      height: 20px;
+      background: #00aaff;
+      border-radius: 50%;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .custom-hotspot::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0,170,255,0.5);
+      animation: pulse 1.8s infinite;
+      top: 0;
+      left: 0;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(2.5);
+        opacity: 0;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -23,13 +59,58 @@
 <div id="panorama"></div>
 
 <script>
-pannellum.viewer('panorama', {
-    "type": "equirectangular",
-    "panorama": "Media.jpg",
-    "autoLoad": true,
-    "showZoomCtrl": true,
-    "showFullscreenCtrl": true
+
+var viewer = pannellum.viewer('panorama', {
+
+    "default": {
+        "firstScene": "cockpit",
+        "autoLoad": true,
+        "sceneFadeDuration": 1000
+    },
+
+    "scenes": {
+
+        "cockpit": {
+            "type": "equirectangular",
+            "panorama": "Cockpit.jpg",
+            "hotSpots": [
+                {
+                    "pitch": -2,
+                    "yaw": 40,
+                    "cssClass": "custom-hotspot",
+                    "createTooltipFunc": hotspot,
+                    "createTooltipArgs": "Passenger",
+                    "clickHandlerFunc": function() {
+                        viewer.loadScene("passenger");
+                    }
+                }
+            ]
+        },
+
+        "passenger": {
+            "type": "equirectangular",
+            "panorama": "Passenger.png",
+            "hotSpots": [
+                {
+                    "pitch": 0,
+                    "yaw": -60,
+                    "cssClass": "custom-hotspot",
+                    "createTooltipFunc": hotspot,
+                    "createTooltipArgs": "Cockpit",
+                    "clickHandlerFunc": function() {
+                        viewer.loadScene("cockpit");
+                    }
+                }
+            ]
+        }
+
+    }
 });
+
+function hotspot(hotSpotDiv, args) {
+    hotSpotDiv.classList.add('custom-hotspot');
+}
+
 </script>
 
 </body>
