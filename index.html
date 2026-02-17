@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Aircraft 360 Viewer</title>
+<title>CH650 360 Viewer</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.css"/>
 <script src="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.js"></script>
@@ -19,28 +19,29 @@ html, body {
     position: absolute;
     top: 0;
     width: 100%;
-    background: rgba(0,0,0,0.75);
+    background: rgba(0,0,0,0.85);
     display: flex;
-    justify-content: center;
-    padding: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 8px 10px;
     z-index: 1000;
 }
 
 .navbar button {
     background: transparent;
-    border: 1px solid white;
+    border: 1px solid #555;
     color: white;
-    padding: 8px 16px;
-    margin: 0 6px;
+    padding: 6px 14px;
+    margin-right: 6px;
     cursor: pointer;
-    transition: 0.3s;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 13px;
+    transition: 0.3s;
 }
 
 .navbar button:hover {
-    background: white;
-    color: black;
+    background: #00aaff;
+    border-color: #00aaff;
 }
 
 .navbar button.active {
@@ -58,44 +59,82 @@ html, body {
 
 <body>
 
-<div class="navbar">
-    <button onclick="loadScene('cockpit')" id="btn-cockpit" class="active">Cockpit</button>
-    <button onclick="loadScene('passenger')" id="btn-passenger">Passenger Cabin</button>
-</div>
-
+<div class="navbar" id="navbar"></div>
 <div id="panorama"></div>
 
 <script>
 
+const scenes = {
+"CH650_Cockpit": "CH650_Cockpit.jpg",
+"CH650_Cockpit_2": "CH650_Cockpit_2.jpg",
+"CH650_Cockpit_Door": "CH650_Cockpit_Door.jpg",
+"CH650_CPT": "CH650_CPT.jpg",
+"CH650_Exterior": "CH650_Exterior.jpg",
+"CH650_Exterior_2": "CH650_Exterior_2.jpg",
+"CH650_Exterior_3": "CH650_Exterior_3.jpg",
+"CH650_Exterior_4": "CH650_Exterior_4.jpg",
+"CH650_Exterior_5": "CH650_Exterior_5.jpg",
+"CH650_Exterior_6": "CH650_Exterior_6.jpg",
+"CH650_FO": "CH650_FO.jpg",
+"CH650_Front_Gear_Well": "CH650_Front_Gear_Well.jpg",
+"CH650_Front_Gear_Well_2": "CH650_Front_Gear_Well_2.jpg",
+"CH650_Front_Gear_Well_3": "CH650_Front_Gear_Well_3.jpg",
+"CH650_Hasa": "CH650_Hasa.jpg",
+"CH650_Interior_Galley": "CH650_Interior_Galley.jpg",
+"CH650_Interior_Galley_2": "CH650_Interior_Galley_2.jpg",
+"CH650_Interior_Passenger": "CH650_Interior_Passenger.jpg",
+"CH650_Interior_Passenger_3": "CH650_Interior_Passenger_3.jpg",
+"CH650_Interior_WC": "CH650_Interior_WC.jpg",
+"CH650_Interior_WC_2": "CH650_Interior_WC_2.jpg",
+"CH650_Left_Gear_Well": "CH650_Left_Gear_Well.jpg",
+"CH650_Passenger": "CH650_Passenger.jpg",
+"CH650_Right_Gear": "CH650_Right_Gear.jpg",
+"CH650_Rudder_Pedal": "CH650_Rudder_Pedal.jpg",
+"CH650_Service_Hole": "CH650_Service_Hole.jpg",
+"CH650_Service_Hole_2": "CH650_Service_Hole_2.jpg",
+"CH650_Storage": "CH650_Storage.jpg",
+"CH650_Wing": "CH650_Wing.jpg"
+};
+
 var viewer = pannellum.viewer('panorama', {
     "default": {
-        "firstScene": "cockpit",
+        "firstScene": "CH650_Cockpit",
         "autoLoad": true,
-        "sceneFadeDuration": 800
+        "sceneFadeDuration": 600
     },
-
-    "scenes": {
-        "cockpit": {
-            "type": "equirectangular",
-            "panorama": "Cockpit.jpg"
-        },
-        "passenger": {
-            "type": "equirectangular",
-            "panorama": "Passenger.jpg"
-        }
-    }
+    "scenes": {}
 });
 
-function loadScene(sceneName) {
-    viewer.loadScene(sceneName);
-
-    // Aktív gomb kiemelés
-    document.querySelectorAll('.navbar button').forEach(btn => {
-        btn.classList.remove('active');
+// Dinamikus scene létrehozás
+for (let key in scenes) {
+    viewer.addScene(key, {
+        "type": "equirectangular",
+        "panorama": scenes[key]
     });
+}
 
+// Navbar generálás
+const navbar = document.getElementById("navbar");
+
+for (let key in scenes) {
+    const button = document.createElement("button");
+    button.innerText = key.replace(/_/g, " ");
+    button.id = "btn-" + key;
+    button.onclick = function() {
+        viewer.loadScene(key);
+        setActiveButton(key);
+    };
+    navbar.appendChild(button);
+}
+
+function setActiveButton(sceneName) {
+    document.querySelectorAll('.navbar button').forEach(btn => {
+        btn.classList.remove("active");
+    });
     document.getElementById("btn-" + sceneName).classList.add("active");
 }
+
+setActiveButton("CH650_Cockpit");
 
 </script>
 
