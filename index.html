@@ -1,130 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Challenger 650 Virtual Tour</title>
+<meta charset="utf-8">
+<title>Aircraft 360 Viewer</title>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.css"/>
+<script src="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.js"></script>
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
+<style>
+html, body {
+    margin: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
 
-    #panorama {
-      width: 100%;
-      height: 100vh;
-    }
+/* NAVBAR */
+.navbar {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    z-index: 1000;
+}
 
-    /* Pulzáló hotspot a panorámához rögzítve */
-    .custom-hotspot {
-      width: 40px;          /* hotspot mérete */
-      height: 40px;
-      background: #00aaff;
-      border-radius: 50%;
-      cursor: pointer;
-      position: relative;   /* fontos: Pannellum kezeli a pozíciót */
-    }
+.navbar button {
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 8px 16px;
+    margin: 0 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 4px;
+    font-size: 14px;
+}
 
-    .custom-hotspot::after {
-      content: '';
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(0,170,255,0.5);
-      animation: pulse 1.8s infinite;
-      top: 0;
-      left: 0;
-    }
+.navbar button:hover {
+    background: white;
+    color: black;
+}
 
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 0.7;
-      }
-      70% {
-        transform: scale(2);
-        opacity: 0.3;
-      }
-      100% {
-        transform: scale(2.5);
-        opacity: 0;
-      }
-    }
-  </style>
+.navbar button.active {
+    background: #00aaff;
+    border-color: #00aaff;
+}
+
+/* PANORAMA */
+#panorama {
+    width: 100%;
+    height: 100vh;
+}
+</style>
 </head>
+
 <body>
+
+<div class="navbar">
+    <button onclick="loadScene('cockpit')" id="btn-cockpit" class="active">Cockpit</button>
+    <button onclick="loadScene('passenger')" id="btn-passenger">Passenger Cabin</button>
+</div>
 
 <div id="panorama"></div>
 
 <script>
-  // Pannellum viewer inicializálása
-  var viewer = pannellum.viewer('panorama', {
-      "default": {
-          "firstScene": "cockpit",
-          "autoLoad": true,
-          "sceneFadeDuration": 1000
-      },
-      "scenes": {
-          "cockpit": {
-              "type": "equirectangular",
-              "panorama": "Cockpit.jpg",
-              "hotSpots": [
-                  {
-                      "pitch": -5,          // függőleges pozíció a panorámában
-                      "yaw": 30,            // vízszintes pozíció a panorámában
-                      "cssClass": "custom-hotspot",
-                      "createTooltipFunc": hotspot,
-                      "createTooltipArgs": "Passenger Seat",
-                      "clickHandlerFunc": function() {
-                          viewer.loadScene("passenger");
-                      }
-                  }
-              ]
-          },
-          "passenger": {
-              "type": "equirectangular",
-              "panorama": "Passenger.png",
-              "hotSpots": [
-                  {
-                      "pitch": 0,
-                      "yaw": -60,
-                      "cssClass": "custom-hotspot",
-                      "createTooltipFunc": hotspot,
-                      "createTooltipArgs": "Cockpit",
-                      "clickHandlerFunc": function() {
-                          viewer.loadScene("cockpit");
-                      }
-                  }
-              ]
-          }
-      }
-  });
 
-  // Hotspot tooltip függvény (felirat)
-  function hotspot(hotSpotDiv, args) {
-      hotSpotDiv.classList.add('custom-hotspot');
+var viewer = pannellum.viewer('panorama', {
+    "default": {
+        "firstScene": "cockpit",
+        "autoLoad": true,
+        "sceneFadeDuration": 800
+    },
 
-      var tooltip = document.createElement('div');
-      tooltip.innerHTML = args;
-      tooltip.style.position = 'absolute';
-      tooltip.style.bottom = '50px';
-      tooltip.style.left = '-20px';
-      tooltip.style.padding = '3px 8px';
-      tooltip.style.background = 'rgba(0,0,0,0.6)';
-      tooltip.style.color = '#fff';
-      tooltip.style.borderRadius = '4px';
-      tooltip.style.fontSize = '12px';
-      tooltip.style.whiteSpace = 'nowrap';
+    "scenes": {
+        "cockpit": {
+            "type": "equirectangular",
+            "panorama": "Cockpit.jpg"
+        },
+        "passenger": {
+            "type": "equirectangular",
+            "panorama": "Passenger.jpg"
+        }
+    }
+});
 
-      hotSpotDiv.appendChild(tooltip);
-  }
+function loadScene(sceneName) {
+    viewer.loadScene(sceneName);
+
+    // Aktív gomb kiemelés
+    document.querySelectorAll('.navbar button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    document.getElementById("btn-" + sceneName).classList.add("active");
+}
+
 </script>
 
 </body>
